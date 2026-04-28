@@ -18,3 +18,7 @@ cwd (prints your directory history, but if someone could fix it into making it b
 cat (E.x: "cat /var/log/kern.log". Prints a file contents)
 More coming soon.
 I have plans to add other commands to copy files and write files, but Im scared at add writting.
+
+## Notes:
+Python is not the best language I could have used but it what I did use.
+I would love a C++ version of this for free someday but thats later.
