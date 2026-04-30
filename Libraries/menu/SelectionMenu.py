@@ -88,7 +88,7 @@ class SelectionMenu(UI):
             elif command.startswith("cd "):
                 path=command.removeprefix("cd ")
                 currentDir+=f"{path}/"
-                paths, filetype = fs.read(currentDir)
+                paths, filetype = fs.readPath(currentDir)
                 
                 match (filetype):
                     case 0:

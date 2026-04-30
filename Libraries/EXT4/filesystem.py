@@ -311,7 +311,7 @@ class ext4(filesystem):
 
 
     #feel free to make this better
-    def read(self, AbsolutePath:str)->tuple[list, int]:
+    def readPath(self, AbsolutePath:str)->tuple[list, int]:
         if not AbsolutePath.startswith("/"):
             print("Not an absolute path")
             return
