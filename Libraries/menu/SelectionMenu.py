@@ -58,7 +58,7 @@ class SelectionMenu(UI):
         inode = fs.GetInode(2)
         Entries=fs.ParseExtentTree(inode[0x28:0x28+60])
         for blockNum, __ in Entries:
-            dirBlock=fs._ParseBlockDirectories_(blockNum)
+            dirBlock=fs.ParseBlockDirectories(blockNum)
         
         printDirblock=True
         

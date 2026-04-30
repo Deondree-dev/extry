@@ -154,7 +154,7 @@ class ext4(filesystem):
         ee_start = (ee_start_hi << 32) | ee_start_lo
         return ee_start
     
-    def _ParseBlockDirectories_(self, block:int)->dict[str]:
+    def ParseBlockDirectories(self, block:int)->dict[str]:
         BlockData:bytes=self.GetBlock(block)
         more=True
         offset=0
@@ -224,7 +224,7 @@ class ext4(filesystem):
         inode = self.GetInode(2)
         Entries=self.ParseExtentTree(inode[0x28:0x28+60])
         for blockNum, __ in Entries:
-            dirBlock=self._ParseBlockDirectories_(blockNum)
+            dirBlock=self.ParseBlockDirectories(blockNum)
 
         if AbsolutePath.replace(" ","")=="/":
             return dirBlock, 2
@@ -241,7 +241,7 @@ class ext4(filesystem):
                 inode = self.GetInode(dirBlock[entry][1])
                 Entries=self.ParseExtentTree(inode[0x28:0x28+60])
                 for blockNum, __ in Entries:
-                    dirBlock=self._ParseBlockDirectories_(blockNum)
+                    dirBlock=self.ParseBlockDirectories(blockNum)
         
         finalPathEntries=dirBlock
         return finalPathEntries, filetype
@@ -259,7 +259,7 @@ class ext4(filesystem):
         inode = self.GetInode(2)
         Entries=self.ParseExtentTree(inode[0x28:0x28+60])
         for blockNum, __ in Entries:
-            dirBlock=self._ParseBlockDirectories_(blockNum)
+            dirBlock=self.ParseBlockDirectories(blockNum)
 
         if AbsolutePath.replace(" ","")=="/":
             return dirBlock, 0
@@ -274,7 +274,7 @@ class ext4(filesystem):
                 inode = self.GetInode(dirBlock[entry][1])
                 Entries=self.ParseExtentTree(inode[0x28:0x28+60])
                 for blockNum, __ in Entries:
-                    dirBlock=self._ParseBlockDirectories_(blockNum)
+                    dirBlock=self.ParseBlockDirectories(blockNum)
             else:
                 fileBytes=self.readFileInodeBytes(dirBlock[entry][1])
                 filetype=1
