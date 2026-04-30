@@ -154,34 +154,6 @@ class ext4(filesystem):
         ee_start = (ee_start_hi << 32) | ee_start_lo
         return ee_start
     
-    def ParseBlockDirectories(self, block:int)->list[int,int,int,int,str]:
-        BlockData:bytes=self.GetBlock(block)
-        more=True
-        offset=0
-        directories=[]
-        try:
-            while more:
-                inode:int=int.from_bytes(BlockData[0x0+offset:0x4+offset], "little")
-                rec_len:int=int.from_bytes(BlockData[0x4+offset:0x6+offset], "little")
-                namelength:int=BlockData[0x6+offset]
-                filetype:int=BlockData[0x7+offset]
-                name:str=BlockData[0x8+offset:0x8+offset+namelength].decode(encoding="utf-8")
-                directories.append([inode,rec_len,namelength,filetype,name])
-                offset+=rec_len
-
-                if rec_len==0:
-                    more=False
-                    break
-
-                if offset>=len(BlockData):
-                    more=False
-                    break
-        except UnicodeDecodeError:
-            print("Got a UnicodeDecodeError, not a directory.")
-            return []
-            
-        return directories
-        
     def _ParseBlockDirectories_(self, block:int)->dict[str]:
         BlockData:bytes=self.GetBlock(block)
         more=True
@@ -217,37 +189,6 @@ class ext4(filesystem):
             
         return directories
 
-    def _ParseBlockDirectoriesBytes_(self, block:int, ThrowErrorsBack=False)->dict[str]:
-        BlockData:bytes=self.GetBlock(block)
-        more=True
-        offset=0
-        directories={}
-        try:
-            while more:
-                inode:int=int.from_bytes(BlockData[0x0+offset:0x4+offset], "little")
-                rec_len:int=int.from_bytes(BlockData[0x4+offset:0x6+offset], "little")
-                namelength:int=BlockData[0x6+offset]
-                filetype:int=BlockData[0x7+offset]
-                name:str=BlockData[0x8+offset:0x8+offset+namelength].decode(encoding="utf-8")
-                directories[name]=[True,BlockData[0x0+offset:0x8+offset+namelength]]
-                offset+=rec_len
-
-                if rec_len==0:
-                    more=False
-                    break
-
-                if offset>=len(BlockData):
-                    more=False
-                    break
-        except UnicodeDecodeError as e:
-            print("Got a UnicodeDecodeError, not a directory.")
-            if ThrowErrorsBack:
-                raise UnicodeDecodeError(e)
-            else:
-                return {}
-            
-        return directories
-
     def readFileInodeBytes(self, inode_num: int) -> bytes:
         inode = self.GetInode(inode_num)
 
@@ -269,13 +210,6 @@ class ext4(filesystem):
                 data += self.GetBlock(Block + i)
         
         return data[0:file_size]
-
-        
-
-        
-
-
-
 
     #feel free to make this better
     def readPath(self, AbsolutePath:str)->tuple[list, int]:
