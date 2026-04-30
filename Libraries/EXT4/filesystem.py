@@ -275,39 +275,6 @@ class ext4(filesystem):
         
 
 
-#test code
-    def Test_block_code(self):
-        
-        dirBlock=self._ParseBlockDirectories_(self.GetRootDir())
-        for i, object in enumerate(dirBlock):
-            print(f"{i}: {object} file type: {dirBlock[object][3]}")
-        
-        try:
-            index=input("directory: ")
-            if index not in dirBlock:
-                print("not a directory")
-            
-            print(self.GetBlockNumberByInode(dirBlock[index][0]))
-            print(self._ParseBlockDirectories_(self.GetBlockNumberByInode(dirBlock[index][0])))
-        except Exception:
-            print()
-    def test_code(self):
-        #print(f"TEST: {self.DriveHeaderInfo}")
-        #try to get 127630080
-        print(f"Start Byte: {self.PartitionStartByte}")
-        print(f"End Byte: {self.PartitionEndByte}")
-        print(f"Number of Inodes: {self.NumberofInodes}")
-        print(f"Inode per group: {self.InodesPerGroup}")
-        print(f"Size per Inode: {self.InodeSize}")
-        PartitionSize=(self.TotalNumberofBlocks*self.BlockSize)
-        #make sure to add the big block thingy thats not accounted for 
-        if self.PartitionStartByte+PartitionSize+1024==self.PartitionEndByte:
-            pass
-        else:
-            print(f"calc dif: {self.PartitionStartByte+PartitionSize-self.PartitionEndByte}")
-        
-        self.Test_block_code()
-
 
 
     #feel free to make this better
@@ -315,9 +282,6 @@ class ext4(filesystem):
         if not AbsolutePath.startswith("/"):
             print("Not an absolute path")
             return
-        
-        
-
         
         paths=AbsolutePath.split("/")[1:]
         finalPathEntries=[]
