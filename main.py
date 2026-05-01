@@ -31,9 +31,7 @@ from Libraries.menu.SelectionMenu import SelectionMenu
 from DriveOperations.drive_operations import *
 import sys
 
-def elevate():
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
-    exit()
+
 
 def is_admin():
     #Taken from https://stackoverflow.com/questions/1026431/cross-platform-way-to-check-admin-rights-in-a-python-script-under-windows
@@ -45,29 +43,49 @@ def is_admin():
     return is_admin
 
 
-if __name__ == "__main__":
+def elevate():
+    print(f"Checking privileges... Admin: {is_admin()}")
     if not is_admin():
-        elevate()
-    
+        print("Not admin. Attempting to elevate...")
+        # Use sys.executable to point to your main.exe
+        params = " ".join([f'"{arg}"' for arg in sys.argv[1:]])
+        result = ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, params, None, 1)
+        
+        if result <= 32:
+            print(f"Elevation failed with error code: {result}")
+        else:
+            print("Elevation call successful. Closing current process.")
+        sys.exit()
 
-    #install and check python packages
-    if not Packages.Install_Packages(): print("Error while installing packages. Please check log for more information.")
-    print("Done with the setup...")
+if __name__ == "__main__":
+    try:
+        if not is_admin():
+            elevate()
+        
 
-    
+        #install and check python packages
+        if not Packages.Install_Packages(): print("Error while installing packages. Please check log for more information.")
+        print("Done with the setup...")
 
-    SupportedDrives=DetectEXTFileSystems()
-    #print(f"Found {len(SupportedDrives)} supported drive(s).")
-    DriveNames=[]
-    for drive in SupportedDrives:
-        DriveNames.append(f"Drive: {drive[4]}, partition {drive[5]}")
-        #print()
-        #driveSizeInfo=ConvertSize(drive[1])
-        #print(f"Drive {drive[4]}, partition {drive[5]}")
-        #this was just extra info, please make it shorter
-        #print(f"Size: {math.floor(driveSizeInfo[0]*100)/100}{driveSizeInfo[1]}")
+        
 
-    MENU=SelectionMenu()
-    MENU.create_UI(DriveNames)
-    while True:
-        MENU.update()
+        SupportedDrives=DetectEXTFileSystems()
+        #print(f"Found {len(SupportedDrives)} supported drive(s).")
+        DriveNames=[]
+        for drive in SupportedDrives:
+            DriveNames.append(f"Drive: {drive[4]}, partition {drive[5]}")
+            #print()
+            #driveSizeInfo=ConvertSize(drive[1])
+            #print(f"Drive {drive[4]}, partition {drive[5]}")
+            #this was just extra info, please make it shorter
+            #print(f"Size: {math.floor(driveSizeInfo[0]*100)/100}{driveSizeInfo[1]}")
+
+        MENU=SelectionMenu()
+        MENU.create_UI(DriveNames)
+        while True:
+            MENU.update()
+    except Exception as e:
+        print(f"CRITICAL ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        input("Press Enter to close...") # Prevents the window from vanishing

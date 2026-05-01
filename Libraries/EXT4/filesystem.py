@@ -235,13 +235,14 @@ class ext4(filesystem):
             if not entry in dirBlock:
                 return {"error":"notadir"}
             filetype=dirBlock[entry][4]
-            if filetype==1:
-                dirBlock={"File":dirBlock[entry][5]}
-            else:
+            if filetype==2:
                 inode = self.GetInode(dirBlock[entry][1])
                 Entries=self.ParseExtentTree(inode[0x28:0x28+60])
                 for blockNum, __ in Entries:
                     dirBlock=self.ParseBlockDirectories(blockNum)
+            else:
+                dirBlock={"File":dirBlock[entry][5]}
+
         
         finalPathEntries=dirBlock
         return finalPathEntries, filetype

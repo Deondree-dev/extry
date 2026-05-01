@@ -4,6 +4,7 @@ from Libraries.menu.UI import UI
 from DriveOperations.drive_operations import DetectEXTFileSystems
 from Libraries.EXT4.filesystem import ext4
 from Libraries.filesystems.filesystem import *
+from Libraries.menu.Command import console
 
 class SelectionMenu(UI):
     def __init__(self):
@@ -52,54 +53,17 @@ class SelectionMenu(UI):
         fs:filesystem = ext4(Drive[6], Drive[2], Drive[3])
         
         inDirectoryViewer=True
-        currentDir="/"
-        dirBlock={}
-        
-        inode = fs.GetInode(2)
-        Entries=fs.ParseExtentTree(inode[0x28:0x28+60])
-        for blockNum, __ in Entries:
-            dirBlock=fs.ParseBlockDirectories(blockNum)
-        
-        printDirblock=True
-        
+
+        c=console(fs)
+
         while inDirectoryViewer:
             command=input(">>> ")
             #commands
-            if command=="cwd":
-                print(currentDir)
-            
-            elif command.startswith("ls "):
-                printDirblock=False
-                path=command.removeprefix("ls ")
-                if not path.startswith("/"):
-                    path=currentDir+path
-                
-                paths, filetype = fs.read(path)
-                
-                match (filetype):
-                    case 0:
-                        print("File/Folder does not exist")
-                    case 1:
-                        print(paths["File"])
-                    case 2:
-                        for pathName in paths:
-                            print(f"{pathName} file type: {paths[pathName][4]}")
-            
-            elif command.startswith("cd "):
-                path=command.removeprefix("cd ")
-                currentDir+=f"{path}/"
-                paths, filetype = fs.readPath(currentDir)
-                
-                match (filetype):
-                    case 0:
-                        print("File/Folder does not exist")
-                    case 1:
-                        print("Cant change directory to a file.")
-                    case 2:
-                        for pathName in paths:
-                            print(f"{pathName} file type: {paths[pathName][4]}")
+            c.FetchCommand(command)
 
-            elif command.startswith("cat "):
+
+
+            if command.startswith("cat "):
                 path=command.removeprefix("cat ")
                 if not path.startswith("/"):
                     path=currentDir+path
