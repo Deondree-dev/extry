@@ -12,6 +12,7 @@ class console:
         self.commandList["ls"]=self.ListDirectory
         self.commandList["cd"]=self.ChangeDirectory
         self.commandList["cwd"]=self.CurrentWorkingDirectory
+        self.commandList["cat"]=self.Concatenate
 
     def FetchCommand(self, command:str):
         ArgumentVector=command.split(" ")
@@ -30,7 +31,7 @@ class console:
 
     def ListDirectory(self, ArgumentVector:list):
         if len(ArgumentVector)<=0:
-            ArgumentVector=['/']
+            ArgumentVector=[self.AbsolutecurrentDir]
         path:str=ArgumentVector[0]
         if not path.startswith("/"):
             path=self.AbsolutecurrentDir+path
@@ -49,6 +50,15 @@ class console:
     def ChangeDirectory(self, ArgumentVector:list):
         path:str=ArgumentVector[0]
         if not path.startswith("/"):
-            self.AbsolutecurrentDir=self.AbsolutecurrentDir+path
+            self.AbsolutecurrentDir=self.AbsolutecurrentDir+path+"/"
         else:
             self.AbsolutecurrentDir=path
+
+    def Concatenate(self, ArgumentVector:list):
+        path=ArgumentVector[0]
+        if not path.startswith("/"):
+            path=self.AbsolutecurrentDir+"/"+path
+        fileBytes, filetype = self.fs.readFile(path)
+        if filetype!=1:
+            print(f"File: {path} doesn't exist.")
+        print(fileBytes)

@@ -233,7 +233,7 @@ class ext4(filesystem):
             if entry.replace(" ","") == '':
                 continue
             if not entry in dirBlock:
-                return {"error":"notadir"}
+                return "notadir", 0
             filetype=dirBlock[entry][4]
             if filetype==2:
                 inode = self.GetInode(dirBlock[entry][1])
@@ -250,7 +250,7 @@ class ext4(filesystem):
     def readFile(self, AbsolutePath:str)->tuple[bytes, int]:
         if not AbsolutePath.startswith("/"):
             print("Not an absolute path")
-            return
+            return {}, 0
         
         
         fileBytes=b''
@@ -269,7 +269,7 @@ class ext4(filesystem):
             if entry.replace(" ","") == '':
                 continue
             if not entry in dirBlock:
-                return {"error":"notadir"}
+                return {"error":"notadir"}, 0
             tempfiletype=dirBlock[entry][4]
             if not tempfiletype==1:
                 inode = self.GetInode(dirBlock[entry][1])

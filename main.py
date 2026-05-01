@@ -44,17 +44,16 @@ def is_admin():
 
 
 def elevate():
-    print(f"Checking privileges... Admin: {is_admin()}")
     if not is_admin():
-        print("Not admin. Attempting to elevate...")
-        # Use sys.executable to point to your main.exe
-        params = " ".join([f'"{arg}"' for arg in sys.argv[1:]])
-        result = ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, params, None, 1)
-        
-        if result <= 32:
-            print(f"Elevation failed with error code: {result}")
+        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+            # Use sys.executable to point to your main.exe
+            params = " ".join([f'"{arg}"' for arg in sys.argv[1:]])
+            result = ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, params, None, 1)
+            
+            if result <= 32:
+                print(f"Elevation failed with error code: {result}")
         else:
-            print("Elevation call successful. Closing current process.")
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
         sys.exit()
 
 if __name__ == "__main__":

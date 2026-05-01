@@ -60,18 +60,6 @@ class SelectionMenu(UI):
             command=input(">>> ")
             #commands
             c.FetchCommand(command)
-
-
-
-            if command.startswith("cat "):
-                path=command.removeprefix("cat ")
-                if not path.startswith("/"):
-                    path=currentDir+path
-                fileBytes, filetype = fs.readFile(path)
-                if filetype!=1:
-                    print("File doesn't exist.")
-                    continue
-                print(fileBytes)
             
 
     def update(self):
