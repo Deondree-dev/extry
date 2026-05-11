@@ -1,6 +1,6 @@
 ## Welcome to extry
 
-Extry is a tool to view linux filesystems in windows, it was created but Deondree-dev but I would really love help with this as I cannot write the cleanest code.
+Extry is a tool to view linux filesystems in windows, it was created by me but I would really love help with this as I cannot write the cleanest code, nor do I wanna ONLY work on this.
 
 ## Contributing Rules:
 Please dont use AI for fixing this tool, its ment to be a skill based project, not vibecoded
