@@ -8,7 +8,7 @@ from Libraries.ExtryError import *
 #https://archive.kernel.org/oldwiki/ext4.wiki.kernel.org/index.php/Ext4_Disk_Layout.html
 #https://github.com/torvalds/linux/blob/master/fs/ext4/ext4.h (WHAT??? WHO COULD HAVE GUESSED????)
 #https://www.kernel.org/doc/html/latest/filesystems/ext4/journal.html#super-block
-#and the online stackoverflow post that helped me debug block size and number of blocks (im not going to find them)
+#and the online stackoverflow post that helped me debug block size and number of blocks
 
 
 class ext4(filesystem):
@@ -66,8 +66,8 @@ class ext4(filesystem):
                 return f.read(self.BlockSize)
         except PermissionError:
             print("Woah, we dont have permission to read that. Please report the issue to the github along with this:")
-            print(f"Block Number: {block}. Size of drive: {self.PartitionStartByte-self.PartitionEndByte}")
-            print("If you feel that you could fix the error, send the fix on the github and I'll look into it!")
+            print(f"Block Number: {block}. Size of drive: {self.PartitionStartByte-self.PartitionEndByte}.")
+            print("If you feel that you could fix the error, send the fix on the github and I'll look into it.")
     
     def ParseExtentTree(self, tree:bytes)->list:
         Magic=int.from_bytes(tree[0x0:0x0+self._len16], "little")

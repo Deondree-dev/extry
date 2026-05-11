@@ -1,5 +1,6 @@
 from Libraries.filesystems.filesystem import filesystem
 import traceback
+import os
 
 class console:
     def __init__(self, fs:filesystem):
@@ -13,6 +14,7 @@ class console:
         self.commandList["cd"]=self.ChangeDirectory
         self.commandList["cwd"]=self.CurrentWorkingDirectory
         self.commandList["cat"]=self.Concatenate
+        self.commandList["copy"]=self.Copy
 
     def FetchCommand(self, command:str):
         ArgumentVector=command.split(" ")
@@ -62,3 +64,28 @@ class console:
         if filetype!=1:
             print(f"File: {path} doesn't exist.")
         print(fileBytes)
+
+    def Copy(self, ArgumentVector:list):
+        try:
+            LinuxPath:str=ArgumentVector[0]
+            WindowsPath:str=ArgumentVector[1]
+            WindowsPathVector=WindowsPath.split("/")
+            #just making it better so the user doesn't have to manually make the folders
+            os.makedirs(WindowsPath.removesuffix(WindowsPathVector[-1]), exist_ok=True)
+
+            WindowsFile=open(WindowsPath, "wb")
+
+            fileBytes, filetype = self.fs.readFile(LinuxPath)
+            
+            if filetype!=1:
+                print(f"Linux File: {LinuxPath} doesn't exist.")
+                return
+            if not WindowsFile.writable():
+                print(f"Windows File: {WindowsPath} isn't writable right now.")
+                return
+            
+            WindowsFile.write(fileBytes)
+            print(f"Successfully wrote: {fileBytes} to {WindowsPath}")
+            WindowsFile.close()
+        except IndexError:
+            print("Usage: copy <FromLinuxFilePath> <ToWindowsFilePath>")
